@@ -1,0 +1,12 @@
+Commands for storing procressing data
+
+gsutil mb gs://mjk-bucket/
+
+gsutil cp D:\Data-Analyst-main\Data-Analyst-main\ipl_bigquery_project\ipl_bigquery_project\scraping\filter_failed_transactions.py gs://mjk-bucket/filter_failed_transactions.py
+
+gcloud dataproc clusters create mjk --region=us-central1 --zone=us-central1-a --single-node --master-machine-type=n1-standard-2 --image-version=2.0-debian10
+
+
+gcloud dataproc jobs submit pyspark gs://mjk-bucket/scripts/clean_and_merge.py --cluster=mjk --region=us-central1
+
+gcloud dataproc jobs submit pyspark gs://mjk-bucket/scripts/filter_failed_transactions.py --cluster=mjk --region=us-central1
