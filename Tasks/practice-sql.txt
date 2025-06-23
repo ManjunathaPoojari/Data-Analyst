@@ -1,0 +1,184 @@
+1)Employee table column names
+| EMPLOYEE_ID | FIRST_NAME  | LAST_NAME   | EMAIL    | PHONE_NUMBER       | HIRE_DATE  | JOB_ID     | SALARY   | COMMISSION_PCT | MANAGER_ID | DEPARTMENT_ID
+
+department columns:
+DEPARTMENT_ID | DEPARTMENT_NAME      | MANAGER_ID | LOCATION_ID
+
+Write a MySQL query to find the name (first_name, last name), department ID and name of all the employees.
+
+select first_name,last_name,department_id from Employee;
+========================================================
+2)job_history table columns
+employee_id  start_date  end_date    job_id department_id
+
+jobs table columns
+JOB_ID  | JOB_TITLE | MIN_SALARY | MAX_SALARY
+
+Write a MySQL query to find the employee ID, job title, number of days between ending date and starting date for all jobs in department 90 from job history.
+
+select jh.employee_id,jo.job_title,datediff(jh.end_date,jh.start_date) as number_of_days from job_history jh join jobs jo on jh.job_id=jo.job_id where jh.department_id=90;
+========================================================
+2)employee table columns
+| EMPLOYEE_ID | FIRST_NAME  | LAST_NAME   | EMAIL    | PHONE_NUMBER       | HIRE_DATE  | JOB_ID     | SALARY   | COMMISSION_PCT | MANAGER_ID | DEPARTMENT_ID
+
+Write a MySQL query to find the name (first_name, last_name) and the salary of the employees who have a higher salary than the employee whose last_name='Bull'.
+
+select first_name,last_name,salary from employee where salary>(select salary from employee where lastname='Bull');
+=======================================================
+4)employee table columns
+EMPLOYEE_ID | FIRST_NAME  | LAST_NAME   | EMAIL    | PHONE_NUMBER       | HIRE_DATE  | JOB_ID     | SALARY   | COMMISSION_PCT | MANAGER_ID | DEPARTMENT_ID 
+
+departments table columns
+DEPARTMENT_ID | DEPARTMENT_NAME      | MANAGER_ID | LOCATION_ID
+
+Write a MySQL query to find the name (first_name, last_name) of all employees who works in the IT department.
+ 
+select e.first_name,e.last_name from employee e join departments d on e.department_id=d.department_id where d.department_name='IT';
+========================================================
+5)locations table columns
+location_id | street_address | postal_code  city |       state_province | country_id|
+
+Write a MySQL query to find the name (first_name, last_name) of the employees who have a manager and worked in a USA based department.
+
+SELECT first_name, last_name FROM employees WHERE department_id IN (SELECT department_id FROM departments 
+WHERE location_id IN (SELECT location_id FROM locations 
+WHERE UPPER(country_id) = 'US'));
+========================================================
+6)locations table columns
+location_id | street_address   |   postal_code  |  city        state_province | country_id
+
+countries table columns
+country_id | country_name | region_id
+
+Write a MySQL query to find the addresses (location_id, street_address, city, state_province, country_name) of all the departments.
+
+select l.location_id,l.street_address,l.city,l.state_province,c.country_name from locations l join countries c on l.country_id=c.country_id;
+========================================================
+7)Write a MySQL query to use EXPLAIN to analyze the performance of a SELECT query retrieving all orders placed after a specific date from the Orders table
+
+explain select * from Orders where order_date>'2025-06-02';
+=========================================================
+8)Explanation
+The first column is an alphabetically ordered list of Doctor names.
+The second column is an alphabetically ordered list of Professor names.
+The third column is an alphabetically ordered list of Singer names.
+The fourth column is an alphabetically ordered list of Actor names.
+The empty cell data for columns with less than the maximum number of names per occupation (in this case, the Professor and Actor columns) are filled with NULL values.
+
+pivot table columns are
+name, occupation
+
+with ranked_names as (select name,occupation,row_number() over (partition by occupation order by name) as rn from PivotTable),
+pivoted AS (
+    SELECT
+        MAX(CASE WHEN occupation = 'Doctor' THEN name END) AS Doctor,
+        MAX(CASE WHEN occupation = 'Professor' THEN name END) AS Professor,
+        MAX(CASE WHEN occupation = 'Singer' THEN name END) AS Singer,
+        MAX(CASE WHEN occupation = 'Actor' THEN name END) AS Actor
+    FROM ranked_names
+    GROUP BY rn
+)
+SELECT * FROM pivoted;
+=========================================================
+9)Suppose you have a table with order details and write a query to fetch all the orders done last 7 days
+
+select * from Orders where order_date>=now()-interval 7day;
+========================================================
+10)Customers With No Orders in Last 3 Months
+
+SELECT c.customer_id, c.customer_name
+FROM Customers c
+LEFT JOIN Orders o
+  ON c.customer_id = o.customer_id
+  AND o.order_date >= CURDATE() - INTERVAL 3 MONTH
+WHERE o.order_id IS NULL;
+========================================================
+11)employee table columns are:
+empno,empname,dept,salary,comm
+
+i)to display name of employees staring from 'v' in ascending order of their salary.
+
+select empname from employee where empname like 'v%' order by salary;
+
+ii)to display the details of all sales dept employee who are earning salary more than 20000.
+
+select * from employee where dept='sales' and salary>20000;
+
+iii)to count distict dept from table
+ 
+select count(distinct(dept)) as dept_count from employee;
+
+iv)to change the salary of nithin from 18000 to 20000;
+ 
+update employee set salary=20000 where empname='nithin';
+
+v)insert new row in the table employee.
+ 
+insert into employee values(6,'sumith','hr',40000,2000);
+
+vi)select avg(comm) fro employee.
+select avg(comm) as average_comm from employee;
+
+vii)fetch empname,dept from employee who are in the hr and accounts.
+
+select empname,dept from employee where dept='HR' and dept='accounts';
+
+viii)fetch the empname,salary from employee and add 100 to the old salary print as new salary
+ 
+select empname,salary,salary+100 as newsalary from  employee;
+========================================================
+12)account table columns are:
+ano,aname,address
+
+transact table columns are:
+trno,ano,amount,type,dot
+
+i)To display details of all transactions of type withdraw from transact table
+
+select * from transact where type='withdraw';
+
+ii)to display ano,amount,of all deposit and withdrawals done in month of May 2017 from table transact.
+
+select a.ano,t.amount,year(t.dot) as year,month(t.dot) as month from account a join transact t on a.ano=t.ano where type='deposit' and type='withdrawals' and year=2017 and month=5;
+
+iii)To display first date of transaction(DoT) from table transact for account having ano as 102.
+
+select * from transact where ano=102 order by dot limit 1;
+
+iv)To display ano,aname,amount, and dot of those persons from account and transact table who have done transaction less than or equal to 3000
+
+select a.ano,a.aname,t.amount,t.dot from account a join transact t on a.ano=t.ano where t.amount<=3000;
+
+v)select ano,aname from account where address not in ('Chennai','bangalore');
+
+vi)select distinct(ano) from transact;
+=============================================================
+13)Write a query to print all prime numbers less than or equal to given number. Print your result on a single line, and use the ampersand () character as your separator (instead of a space).
+
+WITH RECURSIVE numbers AS (
+    SELECT 2 AS n
+    UNION ALL
+    SELECT n + 1 FROM numbers WHERE n + 1 <= 10
+),
+primes AS (
+    SELECT n FROM numbers
+    WHERE NOT EXISTS (
+        SELECT 1 FROM numbers AS d
+        WHERE d.n < n AND d.n > 1 AND n % d.n = 0
+    )
+)
+SELECT STRING_AGG(n::text, '&') AS prime_list FROM primes;
+===========================================================
+14)
+i)Find customers who placed orders in the last 30 days.
+ii)Which 5 products generated the highest total revenue?
+iii)Find customers who have never placed an order.
+iv)List products where stock is below 10.
+v)What is the average order value for each customer?
+vi)Calculate total sales for each day in the past week.
+vii)Who are the top 3 customers by number of orders?
+viii)Show how many times each product was sold.
+ix)Total revenue grouped by product category.
+x)Which customers haven't ordered in the last 6 months
+
+ 
